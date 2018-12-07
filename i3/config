@@ -177,7 +177,7 @@ exec sudo tlp start
 exec compton --config ~/.config/compton.conf
 exec feh --bg-scale ~/Pictures/wallpapers/nebula.jpg
 # Wallpaper etcher
-exec sudo python3 ~/Programming/text-etching/tasklist.py -rl
+exec sudo python3 ~/scripts/text-etching/tasklist.py -rl
 
 # Open new terminal in cwd
 bindsym Mod1+Shift+Return exec gnome-terminal --working-directory="`xcwd`"
@@ -185,8 +185,8 @@ bindsym Mod1+Shift+Return exec gnome-terminal --working-directory="`xcwd`"
 bindsym Mod1+w exec google-chrome-stable
 ###### Multi-media keys ######
 # Brightness controls
-bindsym XF86MonBrightnessUp exec sudo python3 ~/Programming/backlight.py -i 15
-bindsym XF86MonBrightnessDown exec sudo python3 ~/Programming/backlight.py -i -15
+bindsym XF86MonBrightnessUp exec sudo python3 ~/scripts/backlight.py -i 15
+bindsym XF86MonBrightnessDown exec sudo python3 ~/scripts/backlight.py -i -15
 
 # Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
