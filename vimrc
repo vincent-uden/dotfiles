@@ -135,6 +135,9 @@ au FileType ruby setl sw=2 sts=2 et
 nnoremap <F1> :highlight CursorLine ctermbg=None<CR>
 nnoremap <F2> :highlight CursorLine ctermbg=254<CR>
 nnoremap <F3> :!pdflatex <C-r>%<CR>
+nnoremap <F4> :LatexView<CR><CR>
+
+:command LatexView !zathura %:r.pdf --fork
 
 nnoremap <C-i> dd2kp
 nnoremap <C-b> ddp
