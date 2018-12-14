@@ -161,11 +161,12 @@ bar {
     separator_symbol |
     font pango:monospace 12
 }
-client.focused #6c71c4 #6c71c4 #fdf6e3 #6c71c4
-client.focused_inactive #073642 #073642 #eee8d5 #6c71c4
-client.unfocused #073642 #073642 #93a1a1 #586e75
-client.urgent #d33682 #d33682 #fdf6e3 #dc322f
-for_window [class="^.*"] border pixel 0
+client.focused #00000000 #ff8c00 #ff0000 #ff8c00
+client.focused_inactive #00000000 #00000000 #ff0000 #00000000
+client.unfocused #00000000 #00000000 #00000000 #00000000
+client.urgent #00000000 #00000000 #00000000 #00000000
+for_window [class="^.*"] border pixel 2
+
 gaps inner 20
 gaps outer 0
 
@@ -193,3 +194,6 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
 
+bindsym Mod1+t split toggle
+bindsym Mod1+z gaps outer current plus 5
+bindsym Mod1+shift+z gaps outer current minus 5
