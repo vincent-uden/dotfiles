@@ -25,13 +25,14 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'edkolev/tmuxline.vim'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'morhetz/gruvbox'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 
 " Colors 
 " ---------------------------------------------------
-colorscheme onedark
+colorscheme gruvbox
 set background=dark
 syntax enable
 set display+=lastline
@@ -107,7 +108,7 @@ let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown', '.md': 'mark
 " Language
 " -----------------------------------------------------
 map <F6> :setlocal spell! spelllang=en_us<CR>
-map <F4> :setlocal spell! spelllang=sv<CR>
+map <F5> :setlocal spell! spelllang=sv<CR>
 inoremap ¤aa å
 inoremap ¤ae ä
 inoremap ¤oe ö
