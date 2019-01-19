@@ -26,6 +26,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'edkolev/tmuxline.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'morhetz/gruvbox'
+Plugin 'xorvralin2/LatexSnippets'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -125,23 +126,18 @@ nnoremap <space><space> /<++><CR>:noh<CR>4cl
 
 au FileType slim setl sw=2 sts=2 et
 au FileType ruby setl sw=2 sts=2 et
-
-" LaTeX Snippets
-    au FileType tex inoremap ,mm \[<++>\]<++><Esc>2F\
-    au FileType tex inoremap ,mi \(<++>\)<++><Esc>2F\
-    au FileType tex inoremap ,em \emph{}<++><Esc>F{a
-    au FileType tex inoremap ,sn \section{}<++><Esc>F{a
-    au FileType tex inoremap ,ssn \subsection{}<++><Esc>F{a
+au FileType tex setl sw=2 sts=2 et
+au FileType tex set textwidth=80
 
 nnoremap <F1> :highlight CursorLine ctermbg=None<CR>
-nnoremap <F2> :highlight CursorLine ctermbg=254<CR>
+nnoremap <F2> :set rnu! <CR>
 nnoremap <F3> :!pdflatex <C-r>%<CR>
-nnoremap <F4> :LatexView<CR><CR>
-
-:command LatexView !zathura %:r.pdf --fork
+nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
 
 nnoremap <C-i> dd2kp
 nnoremap <C-b> ddp
 
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
+let g:tex_flavor = 'tex'
+
