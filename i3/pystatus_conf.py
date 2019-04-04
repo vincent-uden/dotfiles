@@ -23,7 +23,7 @@ status.register("battery",
 # Note: requires both netifaces and basiciw (for essid and quality)
 status.register("network",
     interface="wlp3s0",
-    format_up="{essid} {quality:03.0f}% {v4}",
+    format_up="{v4}",
     color_up=main_color,
     color_down="#ff4100"
     )

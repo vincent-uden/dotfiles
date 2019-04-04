@@ -21,19 +21,18 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'slim-template/vim-slim'
 Plugin 'junegunn/goyo.vim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
 Plugin 'edkolev/tmuxline.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'morhetz/gruvbox'
-Plugin 'xorvralin2/LatexSnippets'
+Plugin 'vincent-uden/LatexSnippets'
+Plugin 'rust-lang/rust.vim'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 
 " Colors 
 " ---------------------------------------------------
-colorscheme gruvbox
+colorscheme happy_hacking
 set background=dark
 syntax enable
 set display+=lastline
@@ -119,7 +118,7 @@ inoremap ¤OE Ö
 let g:user_emmet_leader_key = "<C-F>"
 inoremap <C-c> <Esc>
 let g:seiya_auto_enable=0
-set colorcolumn=81
+"set colorcolumn=81
 let mapleader = ","
 
 nnoremap <space><space> /<++><CR>:noh<CR>4cl
@@ -128,11 +127,22 @@ au FileType slim setl sw=2 sts=2 et
 au FileType ruby setl sw=2 sts=2 et
 au FileType tex setl sw=2 sts=2 et
 au FileType tex set textwidth=80
+au FileType tex nnoremap <F3> :!pdflatex <C-r>%<CR>
+au FileType tex nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
+au FileType nroff nnoremap <F3> :!groff -ms -T pdf -k % > %:r.pdf<CR>
+au FileType nroff nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
+au FileType cpp nnoremap <F3> :!make<CR>
+au FileType cpp nnoremap <F4> :!make crun<CR>
+au FileType hpp nnoremap <F3> :!make<CR>
+au FileType hpp nnoremap <F4> :!make crun<CR>
+au FileType c nnoremap <F3> :!make<CR>
+au FileType c nnoremap <F4> :!make crun<CR>
+au FileType h nnoremap <F3> :!make<CR>
+au FileType h nnoremap <F4> :!make crun<CR>
+au FileType rust nnoremap <F3> :!cargo check<CR>
+au FileType rust nnoremap <F4> :!cargo run<CR>
 
-nnoremap <F1> :highlight CursorLine ctermbg=None<CR>
 nnoremap <F2> :set rnu! <CR>
-nnoremap <F3> :!pdflatex <C-r>%<CR>
-nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
 
 nnoremap <C-i> dd2kp
 nnoremap <C-b> ddp
@@ -140,4 +150,6 @@ nnoremap <C-b> ddp
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:tex_flavor = 'tex'
+let g:seiya_auto_enable=1
 
+set nocursorline
