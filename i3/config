@@ -144,33 +144,35 @@ bindsym Mod1+e exec "emacs"
 
 set $transparent #00000066
 
-client.focused #00000000 #fffabaff #ff0000ff #fffabaff
+client.focused #00000000 #42bcf4ff #ff0000ff #42bcf4ff
 client.focused_inactive #00000000 #00000000 #ff0000 #00000000
 client.unfocused #00000000 #fffaba33 #00000000 #00000000
 client.urgent #00000000 #00000000 #00000000 #00000000
 for_window [class="^.*"] border pixel 4
 
-gaps inner 40
+gaps inner 20
 gaps outer 0
 
 # Power/performance controller
 exec sudo tlp start
 
 exec compton --config ~/.config/compton.conf
-exec feh --bg-scale ~/pictures/wallpapers/hq_moody_wp.png
+exec feh --bg-scale /home/vincent/pictures/hq_moody_wp.png
 # Wallpaper etcher
 exec sudo python3 ~/scripts/text-etching/tasklist.py -rl
 
 bindsym Mod1+w exec google-chrome-stable
+bindsym Mod1+Shift+w exec /home/vincent/github/dotfiles/scripts/bookmark.sh
+
 ###### Multi-media keys ######
 # Brightness controls
 bindsym XF86MonBrightnessUp exec sudo python ~/github/dotfiles/scripts/backlight.py -i 15
 bindsym XF86MonBrightnessDown exec sudo python ~/github/dotfiles/scripts/backlight.py -i -15
 
 # Audio controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
+bindsym XF86AudioRaiseVolume exec ~/github/dotfiles/scripts/volume_controller.sh +
+bindsym XF86AudioLowerVolume exec ~/github/dotfiles/scripts/volume_controller.sh -
+bindsym XF86AudioMute exec ~/github/dotfiles/scripts/volume_controller.sh toggle
 
 bindsym Mod1+t split toggle
 bindsym Mod1+z gaps inner current plus 5

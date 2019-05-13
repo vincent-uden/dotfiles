@@ -32,7 +32,7 @@ filetype plugin indent on    " required
 
 " Colors 
 " ---------------------------------------------------
-colorscheme happy_hacking
+colorscheme monokai-phoenix
 set background=dark
 syntax enable
 set display+=lastline
@@ -141,6 +141,8 @@ au FileType h nnoremap <F3> :!make<CR>
 au FileType h nnoremap <F4> :!make crun<CR>
 au FileType rust nnoremap <F3> :!cargo check<CR>
 au FileType rust nnoremap <F4> :!cargo run<CR>
+au FileType haskell nnoremap <F3> :!ghc -dynamic % -outputdir ./build<CR>
+au FileType haskell nnoremap <F4> :!./%:r<CR>
 
 nnoremap <F2> :set rnu! <CR>
 
