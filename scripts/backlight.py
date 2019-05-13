@@ -23,6 +23,9 @@ def parse_stdin():
         # Read from the file to make sure that given value was actually written
         with open(GPU_PATH + "brightness", "r") as f:
             new_brightness = int(f.read())
+    elif "-s" in sys.argv or "--show" in sys.argv:
+        with open(GPU_PATH + "brightness", "r") as f:
+            print(f.read())
     else: # Set brightness
         i = None
         for arg in sys.argv:
@@ -37,7 +40,6 @@ def parse_stdin():
         with open(GPU_PATH + "brightness", "w") as f:
             f.write(str(clamp(i, 0, max_brightness)))
         new_brightness = i
-    print(f"Backlight brightness is now set to {new_brightness}.")
 
 if __name__ == "__main__":
     parse_stdin()

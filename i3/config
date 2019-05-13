@@ -158,16 +158,14 @@ exec sudo tlp start
 
 exec compton --config ~/.config/compton.conf
 exec feh --bg-scale /home/vincent/pictures/hq_moody_wp.png
-# Wallpaper etcher
-exec sudo python3 ~/scripts/text-etching/tasklist.py -rl
 
 bindsym Mod1+w exec google-chrome-stable
 bindsym Mod1+Shift+w exec /home/vincent/github/dotfiles/scripts/bookmark.sh
 
 ###### Multi-media keys ######
 # Brightness controls
-bindsym XF86MonBrightnessUp exec sudo python ~/github/dotfiles/scripts/backlight.py -i 15
-bindsym XF86MonBrightnessDown exec sudo python ~/github/dotfiles/scripts/backlight.py -i -15
+bindsym XF86MonBrightnessUp exec ~/github/dotfiles/scripts/brightness_controller.sh +
+bindsym XF86MonBrightnessDown exec ~/github/dotfiles/scripts/brightness_controller.sh -
 
 # Audio controls
 bindsym XF86AudioRaiseVolume exec ~/github/dotfiles/scripts/volume_controller.sh +
