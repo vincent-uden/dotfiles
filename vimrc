@@ -9,30 +9,25 @@ call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'scrooloose/nerdtree'
 Plugin 'mattn/emmet-vim' 
 Plugin 'neovimhaskell/haskell-vim'
-Plugin 'jiangmiao/auto-pairs'
 Plugin 'pangloss/vim-javascript'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'miyakogi/seiya.vim'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'slim-template/vim-slim'
-Plugin 'junegunn/goyo.vim'
-Plugin 'edkolev/tmuxline.vim'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'morhetz/gruvbox'
 Plugin 'vincent-uden/LatexSnippets'
 Plugin 'rust-lang/rust.vim'
+Plugin 'junegunn/goyo.vim'
+Plugin 'dracula/vim'
+Plugin 'sirtaj/vim-openscad'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
 
 " Colors 
 " ---------------------------------------------------
-colorscheme monokai-phoenix
+colorscheme dracula
 set background=dark
 syntax enable
 set display+=lastline
@@ -77,6 +72,13 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <S-Insert> i<S-Insert><Esc>
 
+nnoremap <C-E>l :Vex!<CR>
+nnoremap <C-E>h :Vex<CR>
+nnoremap <C-E>j :Sex<CR>
+nnoremap <C-E>k :Sex!<CR>
+nnoremap <C-E><C-E> :buffers<CR>:buffer<Space>
+nnoremap <C-E><Space> :b #<CR>
+
 " File encoding and gvim options for windows
 " -----------------------------------------------------
 set encoding=utf-8
@@ -90,16 +92,12 @@ set belloff=all
 set guifont=Consolas:h14
 set linebreak
 
-" Nerdtree, tabs and splits
+" Netrw, tabs and splits
 " -----------------------------------------------------
-nnoremap <C-N> :NERDTreeToggle<CR>
 nnoremap <C-t> :tabnew<CR>
 map <F8> :vertical resize -5<CR>
 map <F9> :vertical resize +5<CR>
 
-" Toggle dark/light background
-" -----------------------------------------------------
-map <F1> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
 " Markdown syntax recognition
 " -----------------------------------------------------
@@ -117,41 +115,67 @@ inoremap ¤AE Ä
 inoremap ¤OE Ö
 let g:user_emmet_leader_key = "<C-F>"
 inoremap <C-c> <Esc>
-let g:seiya_auto_enable=0
-"set colorcolumn=81
+set colorcolumn=0
 let mapleader = ","
 
 nnoremap <space><space> /<++><CR>:noh<CR>4cl
 
 au FileType slim setl sw=2 sts=2 et
 au FileType ruby setl sw=2 sts=2 et
+
 au FileType tex setl sw=2 sts=2 et
-au FileType tex set textwidth=80
-au FileType tex nnoremap <F3> :!pdflatex <C-r>%<CR>
+au FileType tex set textwidth=0
+au FileType tex nnoremap <F3> :!xelatex <C-r>%<CR>
 au FileType tex nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
+au FileType tex execute 'setlocal dict+=~/github/dotfiles/latex.txt'
+au FileType tex inoremap { {}<Esc>i
+
+inoremap <C-K> <C-X><C-K>
+
 au FileType nroff nnoremap <F3> :!groff -ms -T pdf -k % > %:r.pdf<CR>
 au FileType nroff nnoremap <F4> :!zathura %:r.pdf --fork<CR><CR>
+
 au FileType cpp nnoremap <F3> :!make<CR>
 au FileType cpp nnoremap <F4> :!make crun<CR>
+
 au FileType hpp nnoremap <F3> :!make<CR>
 au FileType hpp nnoremap <F4> :!make crun<CR>
+
 au FileType c nnoremap <F3> :!make<CR>
 au FileType c nnoremap <F4> :!make crun<CR>
+au FileType c nnoremap <C-a>  I/*<Esc>A*/<Esc>
+
 au FileType h nnoremap <F3> :!make<CR>
 au FileType h nnoremap <F4> :!make crun<CR>
+
 au FileType rust nnoremap <F3> :!cargo check<CR>
 au FileType rust nnoremap <F4> :!cargo run<CR>
+
 au FileType haskell nnoremap <F3> :!ghc -dynamic % -outputdir ./build<CR>
 au FileType haskell nnoremap <F4> :!./%:r<CR>
 
+nnoremap <F1> :set nu! <CR>
 nnoremap <F2> :set rnu! <CR>
 
 nnoremap <C-i> dd2kp
 nnoremap <C-b> ddp
 
+nnoremap <Space>cc :!make<CR>
+nnoremap <Space>cC :!make crun<CR>
+
+nnoremap <Space>. :e .<CR>
+nnoremap <Space>wv :vsplit<CR>
+nnoremap <Space>ws :split<CR>
+
+nnoremap W /\u<CR>:noh<CR>
+nnoremap B ?\u<CR>:noh<CR>
+
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:tex_flavor = 'tex'
-let g:seiya_auto_enable=1
+let g:seiya_auto_enable=0
+
+let g:netrw_banner = 0
+let g:netrw_liststyle = 0
 
 set nocursorline
