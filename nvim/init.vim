@@ -11,6 +11,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'onsails/lspkind.nvim'
 
 Plug 'EdenEast/nightfox.nvim'
+Plug 'shaunsingh/nord.nvim'
 
 Plug 'glepnir/lspsaga.nvim'
 Plug 'simrat39/symbols-outline.nvim'
@@ -31,6 +32,8 @@ Plug 'sbdchd/neoformat'
 
 Plug 'L3MON4D3/LuaSnip'
 
+Plug 'mattn/emmet-vim'
+
 " Formatting
 Plug 'junegunn/vim-easy-align'
 
@@ -38,7 +41,7 @@ Plug 'feline-nvim/feline.nvim'
 
 call plug#end()
 
-colorscheme nightfox
+colorscheme nord
 highlight Normal guibg=none
 
 let mapleader = " "
@@ -58,6 +61,8 @@ nnoremap <leader>f za
 
 nnoremap j gj
 nnoremap k gk
+nnoremap H ^
+nnoremap L $
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
@@ -72,6 +77,11 @@ au FileType css nnoremap <leader>c :!npx prettier --tab-size 4 --write %<CR>
 let g:tex_flavor = 'tex'
 au FileType tex nnoremap <leader>c :w<CR>:!xelatex <C-r>%<CR>
 au FileType tex nnoremap <leader>p :!zathura %:r.pdf --fork<CR><CR>
+
+au FileType rust nnoremap <leader>c :!cargo fmt<CR>
+
+let g:user_emmet_mode='n'
+let g:user_emmet_leader_key='<C-F>'
 
 fun! TrimWhitespace()
     let l:save = winsaveview()

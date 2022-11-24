@@ -3,17 +3,17 @@ vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 
 local one_monokai = {
-	fg = "#abb2bf",
-	bg = "#24273A",
-	green = "#98c379",
-	yellow = "#e5c07b",
-	purple = "#c678dd",
-	orange = "#d19a66",
-	peanut = "#f6d5a4",
-	red = "#e06c75",
-	aqua = "#61afef",
-	darkblue = "#282c34",
-	dark_red = "#f75f5f",
+	fg       = "#E5E9F0",
+	bg       = "#2E3440",
+	green    = "#A3BE8C",
+	yellow   = "#EBCB8B",
+	purple   = "#B48EAD",
+	orange   = "#D08770",
+	peanut   = "#8FBCBB",
+	red      = "#BF616A",
+	aqua     = "#88C0D0",
+	darkblue = "#5E81AC",
+	dark_red = "#BF616A",
 }
 
 require('feline').setup{theme=one_monokai}
