@@ -24,6 +24,7 @@ Plug 'romgrk/nvim-treesitter-context'
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
+Plug 'https://github.com/airblade/vim-gitgutter'
 
 " Languages
 Plug 'rust-lang/rust.vim'
@@ -82,6 +83,17 @@ au FileType rust nnoremap <leader>c :!cargo fmt<CR>
 
 let g:user_emmet_mode='n'
 let g:user_emmet_leader_key='<C-F>'
+
+set termguicolors
+let g:gitgutter_signs=0
+let g:gitgutter_highlight_linenrs=1
+
+autocmd BufRead,BufNewFile * setlocal signcolumn=no
+
+highlight GitGutterAddLineNr guifg=lightgreen
+highlight GitGutterChangeLineNr guifg=orange
+highlight GitGutterDeleteLineNr guifg=lightred
+highlight GitGutterChangeDeleteLineNr guifg=lightred
 
 fun! TrimWhitespace()
     let l:save = winsaveview()
