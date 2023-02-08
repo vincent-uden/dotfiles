@@ -17,3 +17,15 @@ local one_monokai = {
 }
 
 require('feline').setup{theme=one_monokai}
+
+local ft_to_parser = require("nvim-treesitter.parsers").filetype_to_parsername
+ft_to_parser.astro = "tsx"
+
+require('zen-mode').setup {
+    window = {
+        backdrop = 1,
+        width = 80,
+    }
+}
+
+require('idris2').setup({})

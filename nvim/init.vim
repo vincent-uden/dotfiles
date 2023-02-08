@@ -12,9 +12,15 @@ Plug 'onsails/lspkind.nvim'
 
 Plug 'EdenEast/nightfox.nvim'
 Plug 'shaunsingh/nord.nvim'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+Plug 'https://gitlab.com/yorickpeterse/vim-paper.git'
 
 Plug 'glepnir/lspsaga.nvim'
 Plug 'simrat39/symbols-outline.nvim'
+
+Plug 'neovim/nvim-lspconfig'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'ShinKage/idris2-nvim'
 
 " Neovim Tree sitter
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -35,15 +41,19 @@ Plug 'L3MON4D3/LuaSnip'
 
 Plug 'mattn/emmet-vim'
 
+Plug 'jxnblk/vim-mdx-js'
+
 " Formatting
 Plug 'junegunn/vim-easy-align'
 
 Plug 'feline-nvim/feline.nvim'
 
+Plug 'folke/zen-mode.nvim'
+
 call plug#end()
 
-colorscheme nord
-highlight Normal guibg=none
+colorscheme catppuccin
+" highlight Normal guibg=none
 
 let mapleader = " "
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep for > ") })<CR>
@@ -59,6 +69,7 @@ nnoremap <leader>j <C-W><C-J>
 nnoremap <leader>k <C-W><C-K>
 nnoremap <leader>l <C-W><C-L>
 nnoremap <leader>f za
+nnoremap <leader>pd :Lexplore<CR>
 
 nnoremap j gj
 nnoremap k gk
@@ -76,10 +87,12 @@ au FileType typescript nnoremap <leader>c :!npx prettier --write %<CR>
 au FileType css nnoremap <leader>c :!npx prettier --tab-size 4 --write %<CR>
 
 let g:tex_flavor = 'tex'
-au FileType tex nnoremap <leader>c :w<CR>:!xelatex <C-r>%<CR>
-au FileType tex nnoremap <leader>p :!zathura %:r.pdf --fork<CR><CR>
+au FileType tex nnoremap <leader>c :w<CR>:!xelatex "%"<CR>
+au FileType tex nnoremap <leader>p :!zathura '%:r'.pdf --fork<CR>
 
 au FileType rust nnoremap <leader>c :!cargo fmt<CR>
+
+au FileType idris2 nnoremap <leader>c :!idris2 --build<CR>
 
 let g:user_emmet_mode='n'
 let g:user_emmet_leader_key='<C-F>'
@@ -90,10 +103,21 @@ let g:gitgutter_highlight_linenrs=1
 
 autocmd BufRead,BufNewFile * setlocal signcolumn=no
 
+autocmd BufRead,BufEnter *.astro set filetype=astro
+autocmd BufRead,BufEnter *.astro set syntax=typescriptreact
+
+let g:gitgutter_map_keys = 0
 highlight GitGutterAddLineNr guifg=lightgreen
 highlight GitGutterChangeLineNr guifg=orange
 highlight GitGutterDeleteLineNr guifg=lightred
 highlight GitGutterChangeDeleteLineNr guifg=lightred
+
+let g:netrw_keepdir = 0
+let g:netrw_winsize = 30
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+
+set mouse=
 
 fun! TrimWhitespace()
     let l:save = winsaveview()
