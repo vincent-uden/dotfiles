@@ -125,6 +125,8 @@ require("lspconfig").gopls.setup(config({
 	},
 }))
 
+require("lspconfig").ols.setup{}
+
 -- who even uses this?
 require("lspconfig").rust_analyzer.setup(config({
 	cmd = { "rustup", "run", "nightly", "rust-analyzer" },

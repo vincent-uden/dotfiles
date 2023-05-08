@@ -43,6 +43,8 @@ Plug 'mattn/emmet-vim'
 
 Plug 'jxnblk/vim-mdx-js'
 
+Plug 'Tetralux/odin.vim'
+
 " Formatting
 Plug 'junegunn/vim-easy-align'
 
