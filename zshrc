@@ -124,3 +124,7 @@ unset __conda_setup
 
 export CONDA_ENVS_PATH="/media/hdd/.conda-envs"
 
+function troopercd {
+    trooper --choose-dir /tmp/trooper-dir.txt
+    cd $(cat /tmp/trooper-dir.txt)
+}
