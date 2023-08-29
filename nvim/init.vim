@@ -52,6 +52,9 @@ Plug 'feline-nvim/feline.nvim'
 
 Plug 'folke/zen-mode.nvim'
 
+" Movement
+Plug 'jinh0/eyeliner.nvim'
+
 call plug#end()
 
 colorscheme catppuccin
@@ -84,9 +87,11 @@ nmap ga <Plug>(EasyAlign)
 au FileType typescriptreact setl sw=2 sts=2
 au FileType js setl sw=2 sts=2
 au FileType typescript setl sw=2 sts=2
-au FileType typescriptreact nnoremap <leader>c :!npx prettier --write %<CR>
-au FileType typescript nnoremap <leader>c :!npx prettier --write %<CR>
-au FileType css nnoremap <leader>c :!npx prettier --tab-size 4 --write %<CR>
+au FileType cpp setl sw=2 sts=2
+au FileType hpp setl sw=2 sts=2
+au FileType typescriptreact nnoremap <leader>c :!npx prettier --write "%"<CR>
+au FileType typescript nnoremap <leader>c :!npx prettier --write "%"<CR>
+au FileType css nnoremap <leader>c :!npx prettier --tab-size 4 --write "%"<CR>
 
 let g:tex_flavor = 'tex'
 au FileType tex nnoremap <leader>c :w<CR>:!xelatex "%"<CR>

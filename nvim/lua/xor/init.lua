@@ -29,3 +29,8 @@ require('zen-mode').setup {
 }
 
 require('idris2').setup({})
+
+require('eyeliner').setup {
+    highlight_on_key =  true,
+    dim = true
+}

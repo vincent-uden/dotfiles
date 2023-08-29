@@ -24,7 +24,7 @@ set completeopt=menuone,noinsert,noselect
 set signcolumn=yes
 set colorcolumn=80
 
-set cmdheight=2
+set cmdheight=1
 set encoding=utf-8
 
 set foldenable

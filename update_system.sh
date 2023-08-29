@@ -13,7 +13,7 @@ echo -e 'Please open NeoVim and run \033[0;34m:PlugInstall\033[0m'
 rm -rf ~/.config/nvim
 cp -r ./nvim ~/.config/
 
-if ![ -d ~/.oh-my-zsh]; then
+if ! [ -d ~/.oh-my-zsh ]; then
     echo "Please make sure oh-my-zsh is installed using:"
     echo 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
 fi
