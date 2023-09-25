@@ -55,6 +55,8 @@ Plug 'folke/zen-mode.nvim'
 " Movement
 Plug 'jinh0/eyeliner.nvim'
 
+Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
+
 call plug#end()
 
 colorscheme catppuccin
@@ -89,9 +91,10 @@ au FileType js setl sw=2 sts=2
 au FileType typescript setl sw=2 sts=2
 au FileType cpp setl sw=2 sts=2
 au FileType hpp setl sw=2 sts=2
+au FileType astro setl sw=2 sts=2
+au FileType astro nnoremap <leader>c :!prettier --write . --plugin=prettier-plugin-astro<CR>
 au FileType typescriptreact nnoremap <leader>c :!npx prettier --write "%"<CR>
 au FileType typescript nnoremap <leader>c :!npx prettier --write "%"<CR>
-au FileType css nnoremap <leader>c :!npx prettier --tab-size 4 --write "%"<CR>
 
 let g:tex_flavor = 'tex'
 au FileType tex nnoremap <leader>c :w<CR>:!xelatex "%"<CR>
@@ -102,7 +105,7 @@ au FileType rust nnoremap <leader>c :!cargo fmt<CR>
 au FileType idris2 nnoremap <leader>c :!idris2 --build<CR>
 
 let g:user_emmet_mode='n'
-let g:user_emmet_leader_key='<C-F>'
+let g:user_emmet_leader_key='<Space>'
 
 set termguicolors
 let g:gitgutter_signs=0

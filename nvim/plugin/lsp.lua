@@ -101,6 +101,8 @@ require("lspconfig").jedi_language_server.setup(config())
 
 require("lspconfig").svelte.setup(config())
 
+require("lspconfig").astro.setup(config())
+
 require("lspconfig").solang.setup(config())
 
 require("lspconfig").cssls.setup(config())
@@ -170,4 +172,3 @@ require("luasnip.loaders.from_vscode").lazy_load({
 	include = nil, -- Load all languages
 	exclude = {},
 })
-
