@@ -23,6 +23,7 @@ set noshowmode
 set completeopt=menuone,noinsert,noselect
 set signcolumn=yes
 set colorcolumn=80
+set cursorline
 
 set cmdheight=1
 set encoding=utf-8

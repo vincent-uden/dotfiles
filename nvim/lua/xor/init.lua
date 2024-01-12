@@ -44,3 +44,12 @@ require('tabnine').setup({
   exclude_filetypes = {"TelescopePrompt", "NvimTree"},
   log_file_path = nil, -- absolute path to Tabnine log file
 })
+
+vim.api.nvim_create_user_command("DefineFunction",
+    function()
+        vim.cmd("normal [{b\"wyw") -- copy the class name
+        local keys = vim.api.nvim_replace_termcodes('<C-o>yy<C-w><C-h>p<<_w"wPxi::<Esc>$C {<CR>}<CR><Esc><C-w><C-l>', false, false, true)
+        vim.api.nvim_feedkeys(keys, "n", {})
+    end,
+    {}
+)

@@ -23,7 +23,7 @@ Plug 'MunifTanjim/nui.nvim'
 Plug 'ShinKage/idris2-nvim'
 
 " Neovim Tree sitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/playground'
 Plug 'romgrk/nvim-treesitter-context'
 
@@ -54,13 +54,12 @@ Plug 'folke/zen-mode.nvim'
 
 " Movement
 Plug 'jinh0/eyeliner.nvim'
-
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 
 call plug#end()
 
 colorscheme catppuccin
-" highlight Normal guibg=none
+highlight Normal guibg=none
 
 let mapleader = " "
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep for > ") })<CR>
@@ -82,6 +81,8 @@ nnoremap j gj
 nnoremap k gk
 nnoremap H ^
 nnoremap L $
+
+nnoremap ya ggVG"+y<C-O>
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
@@ -107,7 +108,6 @@ au FileType idris2 nnoremap <leader>c :!idris2 --build<CR>
 let g:user_emmet_mode='n'
 let g:user_emmet_leader_key='<Space>'
 
-set termguicolors
 let g:gitgutter_signs=0
 let g:gitgutter_highlight_linenrs=1
 

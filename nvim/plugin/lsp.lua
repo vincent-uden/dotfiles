@@ -77,7 +77,6 @@ local function config(_config)
 		on_attach = function()
 			nnoremap("gd", function() vim.lsp.buf.definition() end)
 			nnoremap("K", function() vim.lsp.buf.hover() end)
-			nnoremap("<leader>vws", function() vim.lsp.buf.workspace_symbol() end)
 			nnoremap("<leader>vd", function() vim.diagnostic.open_float() end)
 			nnoremap("[d", function() vim.diagnostic.goto_next() end)
 			nnoremap("]d", function() vim.diagnostic.goto_prev() end)
@@ -94,8 +93,6 @@ require("lspconfig").tsserver.setup(config())
 
 require("lspconfig").tailwindcss.setup(config())
 
-require("lspconfig").ccls.setup(config())
-
 require("lspconfig").jedi_language_server.setup(config())
 
 require("lspconfig").svelte.setup(config())
@@ -108,7 +105,9 @@ require("lspconfig").cssls.setup(config())
 
 require("lspconfig").texlab.setup(config())
 
-require("lspconfig").clangd.setup(config())
+require("lspconfig").clangd.setup(config({
+    cmd = { "clangd", "--enable-config" },
+}))
 
 require("lspconfig").gopls.setup(config({
 	cmd = { "gopls", "serve" },
