@@ -47,19 +47,21 @@ Plug 'Tetralux/odin.vim'
 
 " Formatting
 Plug 'junegunn/vim-easy-align'
-
 Plug 'feline-nvim/feline.nvim'
-
 Plug 'folke/zen-mode.nvim'
+Plug 'folke/noice.nvim'
+Plug 'MunifTanjim/nui.nvim'
 
 " Movement
 Plug 'jinh0/eyeliner.nvim'
+
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 
 call plug#end()
 
 colorscheme catppuccin
 highlight Normal guibg=none
+set cursorline
 
 let mapleader = " "
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep for > ") })<CR>
@@ -108,6 +110,7 @@ au FileType idris2 nnoremap <leader>c :!idris2 --build<CR>
 let g:user_emmet_mode='n'
 let g:user_emmet_leader_key='<Space>'
 
+set termguicolors
 let g:gitgutter_signs=0
 let g:gitgutter_highlight_linenrs=1
 

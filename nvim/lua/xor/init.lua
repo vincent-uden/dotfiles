@@ -3,16 +3,16 @@ vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 
 local one_monokai = {
-	fg       = "#E5E9F0",
-	bg       = "#2E3440",
-	green    = "#A3BE8C",
-	yellow   = "#EBCB8B",
-	purple   = "#B48EAD",
+	fg       = "#CDD6F4",
+	bg       = "#1E1E2F",
+	green    = "#A5E3A1",
+	yellow   = "#F0E2AF",
+	purple   = "#F5C2E7",
 	orange   = "#D08770",
 	peanut   = "#8FBCBB",
-	red      = "#BF616A",
-	aqua     = "#88C0D0",
-	darkblue = "#5E81AC",
+	red      = "#F38BA8",
+	aqua     = "#94E2D5",
+	darkblue = "#94E2D5",
 	dark_red = "#BF616A",
 }
 
@@ -43,6 +43,25 @@ require('tabnine').setup({
   suggestion_color = {gui = "#808080", cterm = 244},
   exclude_filetypes = {"TelescopePrompt", "NvimTree"},
   log_file_path = nil, -- absolute path to Tabnine log file
+})
+
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
 })
 
 vim.api.nvim_create_user_command("DefineFunction",
