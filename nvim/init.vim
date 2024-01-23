@@ -100,7 +100,7 @@ au FileType typescriptreact nnoremap <leader>c :!npx prettier --write "%"<CR>
 au FileType typescript nnoremap <leader>c :!npx prettier --write "%"<CR>
 
 let g:tex_flavor = 'tex'
-au FileType tex nnoremap <leader>c :w<CR>:!xelatex "%"<CR>
+au FileType tex nnoremap <leader>c :w<CR>:silent !xelatex "%" > /dev/null<CR>
 au FileType tex nnoremap <leader>p :!zathura '%:r'.pdf --fork<CR>
 
 au FileType rust nnoremap <leader>c :!cargo fmt<CR>
