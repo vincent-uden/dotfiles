@@ -5,6 +5,8 @@ echo "Backing up and writing new NeoVim config files"
 
 mkdir -p ~/.config/backup
 cp -r ~/.config/nvim ~/.config/backup/nvim
+cp -r ~/.config/hypr ~/.config/backup/hypr
+cp -r ~/.config/waybar ~/.config/backup/waybar
 cp -r ~/.zshrc  ~/.config/backup/.zshrc
 cp -r ~/.tmux.conf  ~/.config/backup/.tmux.conf
 
@@ -24,3 +26,9 @@ cp -r ./zshrc ~/.zshrc
 rm ~/.tmux.conf
 cp -r ./tmux.conf ~/.tmux.conf
 
+
+rm ~/.config/hypr
+cp -r ./hypr ~/.config/hypr
+
+rm ~/.config/waybar/
+cp -r ./waybar ~/.config/waybar
