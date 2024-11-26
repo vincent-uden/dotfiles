@@ -99,10 +99,13 @@ vim.opt.encoding = 'utf-8'
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Latex
+vim.g.tex_flavor = 'tex'
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+vim.keymap.set('n', '<leader>E', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -466,8 +469,9 @@ require('lazy').setup({
         tsserver = {},
         ols = {},
         tailwindcss = {},
-        jedi_language_server = {},
+        jedi_language_server = { cmd = { 'uv', 'run', 'jedi-language-server' } },
         cssls = {},
+        texlab = {},
         rust_analyzer = {
           cmd = { 'rustup', 'run', 'nightly', 'rust-analyzer' },
         },
@@ -550,6 +554,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = { 'black' },
         -- TODO: Add some formatters here
         --
         -- Conform can also run multiple formatters sequentially
@@ -773,6 +778,8 @@ require('lazy').setup({
     end,
   },
 
+  require 'custom.plugins.harpoon',
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -795,6 +802,17 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
+  --
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<C-i>',
+        },
+      }
+    end,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -816,6 +834,60 @@ require('lazy').setup({
     },
   },
 })
+
+local harpoon = require 'harpoon'
+harpoon:setup {}
+
+local conf = require('telescope.config').values
+local function toggle_telescope(harpoon_files)
+  local file_paths = {}
+  for _, item in ipairs(harpoon_files.items) do
+    table.insert(file_paths, item.value)
+  end
+
+  require('telescope.pickers')
+    .new({}, {
+      prompt_title = 'Harpoon',
+      finder = require('telescope.finders').new_table {
+        results = file_paths,
+      },
+      previewer = conf.file_previewer(conf),
+      sorter = conf.generic_sorter(conf),
+    })
+    :find()
+end
+
+vim.keymap.set('n', '<leader>e', function()
+  toggle_telescope(harpoon:list())
+end, { desc = 'Open harpoon' })
+
+vim.keymap.set('n', '<leader>hd', function()
+  local current_file_path = vim.fn.expand '%'
+  local harpoon_list = harpoon:list()
+  local removed = false
+
+  for index = 1, harpoon_list:length() do
+    if harpoon_list:get(index).value == current_file_path then
+      harpoon_list:remove_at(index)
+      removed = true
+      break
+    end
+  end
+
+  if removed then
+    vim.notify('Removed current buffer from Harpoon list', vim.log.levels.INFO)
+  else
+    vim.notify('Current buffer not in Harpoon list', vim.log.levels.WARN)
+  end
+end, { desc = 'Remove current buffer from Harpoon list' })
+
+vim.keymap.set('n', '<leader>ha', function()
+  harpoon:list():add()
+end, { desc = 'Add open buffer to harpoon list' })
+
+vim.keymap.set('n', '<C-e>', function()
+  harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
