@@ -139,6 +139,10 @@ vim.keymap.set('n', 'k', 'gk', { desc = 'Up split' })
 vim.keymap.set('n', 'H', '_', { desc = 'Beginning of line' })
 vim.keymap.set('n', 'L', '$', { desc = 'End of line' })
 
+-- Odin game dev
+vim.keymap.set('n', '<F5>', '<cmd>!./build_hot_reload.sh<CR>', { desc = 'End of line' })
+vim.keymap.set('n', '<F6>', '<cmd>!./build_debug.sh<CR>', { desc = 'End of line' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -154,7 +158,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'odin' },
+  pattern = { 'odin', 'typescript' },
   command = 'setlocal shiftwidth=2 tabstop=2 expandtab',
 })
 
@@ -185,14 +189,6 @@ require('lazy').setup({
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
-  --
-  -- Use `opts = {}` to force a plugin to be loaded.
-  --
-  --  This is equivalent to:
-  --    require('Comment').setup({})
-
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
@@ -205,7 +201,7 @@ require('lazy').setup({
       signs = {
         add = { text = '+' },
         change = { text = '~' },
-        delete = { text = '_' },
+        delete = { text = '-' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
@@ -466,7 +462,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {},
+        ts_ls = {},
         ols = {},
         tailwindcss = {},
         jedi_language_server = { cmd = { 'uv', 'run', 'jedi-language-server' } },
@@ -477,6 +473,9 @@ require('lazy').setup({
         },
         clangd = {
           cmd = { 'clangd', '--enable-config' },
+        },
+        tinymist = {
+          filetypes = { 'typst' },
         },
         --
 
@@ -552,17 +551,12 @@ require('lazy').setup({
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
         }
       end,
+      stop_after_first = true,
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'black' },
-        -- TODO: Add some formatters here
-        --
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { 'prettier', 'bun run check:write' },
+        typescript = { 'prettier', 'bun run check:write' },
       },
     },
   },
@@ -777,39 +771,35 @@ require('lazy').setup({
       }
     end,
   },
-
   require 'custom.plugins.harpoon',
-
-  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
-  -- init.lua. If you want these files, they are in the repository, so you can just download them and
-  -- place them in the correct locations.
-
-  -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
-  --  Here are some example plugins that I've included in the Kickstart repository.
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
-  --
+  require 'custom.plugins.zen-mode',
+  require 'custom.plugins.treesitter-context',
+  require 'custom.plugins.buvvers',
   {
-    'supermaven-inc/supermaven-nvim',
+    'numToStr/Comment.nvim',
+    opts = {},
     config = function()
-      require('supermaven-nvim').setup {
-        keymaps = {
-          accept_suggestion = '<C-i>',
+      ---@diagnostic disable-next-line: missing-fields
+      require('Comment').setup {
+        toggler = {
+          line = '<leader>cc',
+          block = '<leader>cb',
         },
+        opleader = {
+          line = '<leader>c',
+          block = '<leader>b',
+        },
+        ignore = '^$',
+      }
+    end,
+  },
+  {
+    'hedyhli/outline.nvim',
+    config = function()
+      -- Example mapping to toggle outline
+      vim.keymap.set('n', '<leader>o', '<cmd>Outline<CR>', { desc = 'Toggle Outline' })
+      require('outline').setup {
+        -- Your setup opts here (leave empty to use defaults)
       }
     end,
   },
@@ -891,3 +881,5 @@ end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+vim.g_ts_force_sync_parsing = true
