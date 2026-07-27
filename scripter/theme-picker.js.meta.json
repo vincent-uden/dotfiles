@@ -1,0 +1,17 @@
+{
+  "type": "clearscript",
+  "name": "Theme Picker",
+  "description": "Switches Wezterm and Neovim themes (Tokyo Night / Gruvbox Light).",
+  "nativeTypes": [
+    {
+      "name": "File",
+      "typeName": "System.IO.File"
+    },
+    {
+      "name": "Environment",
+      "typeName": "System.Environment"
+    }
+  ],
+  "dynamicImport": true,
+  "commandExecution": false
+}

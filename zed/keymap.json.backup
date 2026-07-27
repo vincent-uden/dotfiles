@@ -1,0 +1,43 @@
+// Zed keymap
+
+//
+
+// For information on binding keys, see the Zed
+
+// documentation: https://zed.dev/docs/key-bindings
+
+//
+
+// To see the default key bindings run `zed: open default keymap`
+
+// from the command palette.
+
+[
+  {
+    "context": "Workspace",
+
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    }
+  },
+
+  {
+    "context": "Editor",
+
+    "bindings": {}
+  },
+
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual)",
+    "bindings": {
+      "shift-h": "vim::StartOfLine",
+      "shift-l": "vim::EndOfLine",
+      "ctrl-alt-4": "vim::EndOfLine",
+      "space p f": "file_finder::Toggle",
+      "space p d": "outline::Toggle",
+      "space g d": "editor::GoToDefinition",
+      "space p r": "editor::FindAllReferences",
+      "ctrl-enter": "editor::OpenExcerpts"
+    }
+  }
+]

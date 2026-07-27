@@ -1,0 +1,146 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+
+[
+  {
+    "bindings": {
+      "shift-escape": null,
+      "f12": "workspace::ToggleZoom",
+    },
+  },
+  {
+    "context": "Workspace",
+
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+      "ctrl-j": "workspace::ToggleBottomDock",
+      "ctrl-h": "workspace::ToggleLeftDock",
+    },
+  },
+
+  {
+    "context": "(vim_mode == normal)",
+    "bindings": {
+      "space o": "outline_panel::ToggleFocus",
+    },
+  },
+  {
+    "context": "Editor && (vim_mode == insert || vim_mode == visual)",
+    "bindings": {
+      "shift-escape": "vim::SwitchToNormalMode",
+    },
+  },
+  {
+    "context": "Editor && (vim_mode == normal)",
+    "bindings": {
+      "space c c": "vim::ToggleComments",
+      "space l": "workspace::ActivatePaneRight",
+      "space h": "workspace::ActivatePaneLeft",
+      "space j": "workspace::ActivatePaneDown",
+      "space k": "workspace::ActivatePaneUp",
+    },
+  },
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual)",
+    "bindings": {
+      "shift-h": "vim::StartOfLine",
+      "shift-l": "vim::EndOfLine",
+      "ctrl-shift-k": "pane::ActivateNextItem",
+      "ctrl-shift-j": "pane::ActivatePreviousItem",
+      "ctrl-alt-4": "vim::EndOfLine",
+      "space p f": "file_finder::Toggle",
+      "space p d": "outline::Toggle",
+      "space p p": "project_symbols::Toggle",
+      "space g d": "editor::GoToDefinition",
+      "space p r": "editor::FindAllReferences",
+      "ctrl-enter": "editor::OpenExcerpts",
+    },
+  },
+  {
+    "context": "Editor && edit_prediction",
+    "bindings": {
+      "ctrl-a": "editor::AcceptEditPrediction",
+    },
+  },
+  {
+    "context": "Editor && edit_prediction_conflict",
+    "bindings": {
+      "ctrl-a": "editor::AcceptEditPrediction",
+    },
+  },
+
+  // When the completion menu is open (LSP list), confirm the selected item
+  {
+    "context": "Editor && showing_completions",
+    "bindings": {
+      "ctrl-a": "editor::ComposeCompletion",
+    },
+  },
+
+  // Accept a partial inline completion (next word) if available
+  {
+    "context": "Editor && edit_prediction",
+    "bindings": {
+      "ctrl-a": "editor::AcceptNextWordEditPrediction",
+    },
+  },
+  {
+    "context": "vim_mode == visual",
+    "bindings": {
+      "space c": "vim::ToggleComments",
+    },
+  },
+  {
+    "context": "(VimControl && !menu)",
+    "bindings": {
+      "ctrl-j": "workspace::ToggleBottomDock",
+    },
+  },
+  {
+    "context": "vim_mode == literal",
+    "bindings": {
+      "ctrl-j": "workspace::ToggleBottomDock",
+    },
+  },
+  {
+    "context": "((FileFinder || FileFinder > Picker > Editor) || FileFinder > Picker > menu)",
+    "bindings": {
+      "ctrl-j": null,
+    },
+  },
+  {
+    "context": "Picker > Editor",
+    "unbind": {
+      "ctrl-h": "editor::Backspace"
+    }
+  },
+  {
+    "context": "vim_mode == literal",
+    "unbind": {
+      "ctrl-h": [
+        "vim::Literal",
+        [
+          "ctrl-h",
+          "\b"
+        ]
+      ]
+    }
+  },
+  {
+    "context": "Editor && mode == full",
+    "unbind": {
+      "ctrl-h": "buffer_search::DeployReplace"
+    }
+  },
+  {
+    "context": "BufferSearchBar",
+    "unbind": {
+      "ctrl-h": "search::ToggleReplace"
+    }
+  }
+]

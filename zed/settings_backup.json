@@ -1,0 +1,68 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "icon_theme": "Zed (Default)",
+  "show_edit_predictions": false,
+  "edit_predictions": {
+    "mode": "subtle",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null
+    },
+    "enabled_in_assistant": false
+  },
+  "vim_mode": true,
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "buffer_font_weight": 400,
+  "buffer_font_family": "Source Code Pro",
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "Ayu Dark"
+  },
+  "cursor_blink": false,
+  "features": {
+    "inline_completion_provider": "none"
+  },
+  "project_panel": {
+    "dock": "right"
+  },
+  "assistant": {
+    "version": "2",
+    "enabled": false
+  },
+  "chat_panel": {
+    "button": false
+  },
+  "notification_panel": {
+    "button": false
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "projects_online_by_default": false,
+  "languages": {
+    "C": {
+      "language_servers": ["clangd"]
+    }
+  },
+  "lsp": {
+    "clangd": {
+      "command": "clangd",
+      "args": [
+        "--query-driver=\"C:\\Program Files (x86)\\Arm GNU Toolchain arm-none-eabi\\13.2 Rel1\\bin\\arm-none-eabi-gcc.exe\""
+      ]
+    }
+  }
+}
