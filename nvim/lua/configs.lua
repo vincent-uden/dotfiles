@@ -36,5 +36,5 @@ opt.completeopt = { 'menuone', 'popup', 'noinsert' } -- Options for completion m
 
 vim.cmd.filetype 'plugin indent on'
 
-    vim.cmd.colorscheme 'gruvbox' -- marker[colorscheme]
-    vim.o.background = 'light' -- marker[background]
+vim.cmd.colorscheme 'tokyonight-night' -- marker[colorscheme]
+vim.o.background = 'dark' -- marker[background]

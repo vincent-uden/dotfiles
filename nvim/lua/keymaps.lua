@@ -66,6 +66,9 @@ keymap('n', '<leader>tf', function()
 end)
 
 -- Debugging
+keymap('n', '<F4>', function()
+  vim.cmd 'DapCloseUi'
+end)
 keymap('n', '<F5>', function()
   require('dap').continue()
 end)
@@ -84,3 +87,27 @@ end)
 
 -- Neogit
 keymap('n', '<leader>gg', '<cmd>Neogit<cr>', { desc = 'Show Neogit UI' })
+
+-- Build and run
+keymap('n', '<F2>', function()
+  local cwd = vim.fn.getcwd()
+  vim.system({ 'nu', 'build.nu', 'debug' }, { cwd = cwd }, function(obj)
+    if obj.code ~= 0 then
+      vim.schedule(function()
+        vim.notify('Build failed (exit ' .. tostring(obj.code) .. ')', vim.log.levels.ERROR)
+      end)
+      return
+    end
+    vim.system({ './main-hot-reload.bin' }, { cwd = cwd }, function(run_obj)
+      vim.schedule(function()
+        if run_obj.code ~= 0 then
+          vim.notify('Run exited with code ' .. tostring(run_obj.code), vim.log.levels.WARN)
+        end
+      end)
+    end)
+  end)
+end, { desc = 'Full reload' })
+
+keymap('n', '<F3>', function()
+  vim.system({ 'nu', 'build.nu', 'hot-reload' }, { cwd = vim.fn.getcwd() })
+end, { desc = 'Hot reload' })
