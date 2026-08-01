@@ -98,6 +98,9 @@ keymap('n', '<F2>', function()
       end)
       return
     end
+    vim.schedule(function()
+      vim.notify('Build succeeded, launching ./main-hot-reload.bin', vim.log.levels.INFO)
+    end)
     vim.system({ './main-hot-reload.bin' }, { cwd = cwd }, function(run_obj)
       vim.schedule(function()
         if run_obj.code ~= 0 then
@@ -109,5 +112,14 @@ keymap('n', '<F2>', function()
 end, { desc = 'Full reload' })
 
 keymap('n', '<F3>', function()
-  vim.system({ 'nu', 'build.nu', 'hot-reload' }, { cwd = vim.fn.getcwd() })
+  local cwd = vim.fn.getcwd()
+  vim.system({ 'nu', 'build.nu', 'hot-reload' }, { cwd = cwd }, function(obj)
+    vim.schedule(function()
+      if obj.code ~= 0 then
+        vim.notify('Hot reload build failed (exit ' .. tostring(obj.code) .. ')', vim.log.levels.ERROR)
+      else
+        vim.notify('Hot reload build complete', vim.log.levels.INFO)
+      end
+    end)
+  end)
 end, { desc = 'Hot reload' })
