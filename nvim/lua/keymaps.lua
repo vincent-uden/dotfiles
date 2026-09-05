@@ -98,10 +98,11 @@ keymap('n', '<F2>', function()
       end)
       return
     end
+    local executable = vim.fn.has 'win32' == 1 and 'main-hot-reload.exe' or './main-hot-reload.bin'
     vim.schedule(function()
-      vim.notify('Build succeeded, launching ./main-hot-reload.bin', vim.log.levels.INFO)
+      vim.notify('Build succeeded, launching ' .. executable, vim.log.levels.INFO)
     end)
-    vim.system({ './main-hot-reload.bin' }, { cwd = cwd }, function(run_obj)
+    vim.system({ executable }, { cwd = cwd }, function(run_obj)
       vim.schedule(function()
         if run_obj.code ~= 0 then
           vim.notify('Run exited with code ' .. tostring(run_obj.code), vim.log.levels.WARN)
