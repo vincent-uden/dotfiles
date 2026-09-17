@@ -89,12 +89,57 @@ end)
 keymap('n', '<leader>gg', '<cmd>Neogit<cr>', { desc = 'Show Neogit UI' })
 
 -- Build and run
+
+-- Show build output in a floating window ("popover")
+local function show_build_output(title, output)
+  output = output or ''
+  -- Merge stdout/stderr runs and trim trailing empty lines
+  local lines = vim.split(output, '\n', { trimempty = true })
+  if #lines == 0 then
+    lines = { '(no output)' }
+  end
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].bufhidden = 'wipe'
+
+  local max_line_length = 0
+  for _, line in ipairs(lines) do
+    max_line_length = math.max(max_line_length, #line)
+  end
+  local columns, rows = vim.o.columns, vim.o.lines
+  local width = math.min(math.floor(columns * 0.8), max_line_length + 2)
+  local height = math.min(math.floor(rows * 0.6), #lines)
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    width = math.max(width, 20),
+    height = math.max(height, 3),
+    col = math.floor((columns - math.max(width, 20)) / 2),
+    row = math.floor((rows - math.max(height, 3)) / 2),
+    style = 'minimal',
+    border = 'rounded',
+    title = title,
+    title_pos = 'center',
+  })
+
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+  vim.keymap.set('n', 'q', close, { buffer = buf, nowait = true, desc = 'Close build output' })
+  vim.keymap.set('n', '<Esc>', close, { buffer = buf, nowait = true, desc = 'Close build output' })
+end
+
 keymap('n', '<F2>', function()
   local cwd = vim.fn.getcwd()
   vim.system({ 'nu', 'build.nu', 'debug' }, { cwd = cwd }, function(obj)
     if obj.code ~= 0 then
       vim.schedule(function()
         vim.notify('Build failed (exit ' .. tostring(obj.code) .. ')', vim.log.levels.ERROR)
+        show_build_output('Build failed (exit ' .. tostring(obj.code) .. ')', (obj.stdout or '') .. (obj.stderr or ''))
       end)
       return
     end
@@ -118,6 +163,10 @@ keymap('n', '<F3>', function()
     vim.schedule(function()
       if obj.code ~= 0 then
         vim.notify('Hot reload build failed (exit ' .. tostring(obj.code) .. ')', vim.log.levels.ERROR)
+        show_build_output(
+          'Hot reload build failed (exit ' .. tostring(obj.code) .. ')',
+          (obj.stdout or '') .. (obj.stderr or '')
+        )
       else
         vim.notify('Hot reload build complete', vim.log.levels.INFO)
       end
