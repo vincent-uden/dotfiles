@@ -22,15 +22,15 @@
       "src": "https://github.com/jinh0/eyeliner.nvim"
     },
     "fff.nvim": {
-      "rev": "4083ea04d30537aaa653a2189616ab6b4ff19810",
+      "rev": "7353971198321b5330824c29eb4e49635c072245",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "fzf-lua": {
-      "rev": "02bc882f208f3481aa959dbbee8ce5edad2fd8b2",
+      "rev": "5dca84ef44f37b960a128a43d044ee348ff86fb4",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
     "gitsigns.nvim": {
-      "rev": "8d79f2410c76e62b92e51c28c82e28c1c5a3daeb",
+      "rev": "fd780920613e541cbdfac41bf711583ed49f9249",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "gruvbox.nvim": {
@@ -42,7 +42,7 @@
       "src": "https://github.com/mason-org/mason.nvim"
     },
     "neogit": {
-      "rev": "5adc81b26232954cd7a90f158aa7844c18fc3165",
+      "rev": "832a2db084ac25c2801fd73a3fab58f3c82ed2ec",
       "src": "https://github.com/neogitorg/neogit"
     },
     "nvim-dap": {
@@ -62,12 +62,12 @@
       "src": "https://github.com/nvim-neotest/nvim-nio"
     },
     "nvim-treesitter": {
-      "rev": "9a168f6357ed21c3a636e1727bc7d382abc451b8",
+      "rev": "29212d826054bb2948fa9d3a99eca9bf6a050eb2",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "outline.nvim": {
-      "rev": "2a132953b944561d45b52e4541ebfff71934a742",
-      "src": "https://github.com/hedyhli/outline.nvim"
+      "rev": "f5ad6ee199c75d1af7ba983fac177cbe501519db",
+      "src": "https://github.com/vincent-uden/outline.nvim"
     },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",

@@ -214,9 +214,9 @@ require('Comment').setup {
   ignore = '^$',
 }
 
--- outline.nvim
+-- outline.nvim (vincent-uden fork)
 vim.pack.add {
-  { src = 'https://github.com/hedyhli/outline.nvim' },
+  { src = 'https://github.com/vincent-uden/outline.nvim' },
 }
 require('outline').setup {}
 

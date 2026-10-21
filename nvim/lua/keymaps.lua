@@ -143,7 +143,7 @@ keymap('n', '<F2>', function()
       end)
       return
     end
-    local executable = vim.fn.has 'win32' == 1 and 'main-hot-reload.exe' or './main-hot-reload.bin'
+    local executable = vim.fn.has 'win32' == 1 and './build/main-hot-reload.exe' or './build/main-hot-reload.bin'
     vim.schedule(function()
       vim.notify('Build succeeded, launching ' .. executable, vim.log.levels.INFO)
     end)
@@ -163,10 +163,7 @@ keymap('n', '<F3>', function()
     vim.schedule(function()
       if obj.code ~= 0 then
         vim.notify('Hot reload build failed (exit ' .. tostring(obj.code) .. ')', vim.log.levels.ERROR)
-        show_build_output(
-          'Hot reload build failed (exit ' .. tostring(obj.code) .. ')',
-          (obj.stdout or '') .. (obj.stderr or '')
-        )
+        show_build_output('Hot reload build failed (exit ' .. tostring(obj.code) .. ')', (obj.stdout or '') .. (obj.stderr or ''))
       else
         vim.notify('Hot reload build complete', vim.log.levels.INFO)
       end
