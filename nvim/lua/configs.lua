@@ -36,5 +36,12 @@ opt.completeopt = { 'menuone', 'popup', 'noinsert' } -- Options for completion m
 
 vim.cmd.filetype 'plugin indent on'
 
-vim.cmd.colorscheme 'tokyonight-night' -- marker[colorscheme]
+vim.cmd.colorscheme 'monoglow-z' -- marker[colorscheme]
 vim.o.background = 'dark' -- marker[background]
+
+vim.filetype.add {
+  extension = {
+    geo = 'glsl',
+    vs = 'glsl',
+  },
+}

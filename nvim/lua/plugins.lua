@@ -283,3 +283,8 @@ require('neogit').setup {}
 vim.pack.add {
   { src = 'https://github.com/ellisonleao/gruvbox.nvim' },
 }
+
+-- monoglow
+vim.pack.add {
+  { src = 'https://github.com/wnkz/monoglow.nvim' },
+}

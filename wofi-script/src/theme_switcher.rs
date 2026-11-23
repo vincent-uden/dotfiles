@@ -122,6 +122,13 @@ pub fn cmd_theme_switcher() -> Result<()> {
             neovim_name: Some("gruvbox".into()),
             wofi_contents: Some(include_str!("../../wofi/style-gruvbox-light.css")),
         },
+        Theme {
+            name: "Monoglow".into(),
+            dark: true,
+            kitty_contents: Some(include_str!("../themes/monoglow/monoglow_z.conf")),
+            neovim_name: Some("monoglow-z".into()),
+            wofi_contents: Some(include_str!("../../wofi/style-monoglow.css")),
+        },
     ];
 
     let mut child = Command::new("wofi")
