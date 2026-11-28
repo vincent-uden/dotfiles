@@ -1,39 +1,54 @@
 #!/usr/bin/env nu
 #
-# odin-update -- install / update the Odin compiler from odin-lang/Odin releases.
+# odin-update -- install / update the Odin toolchain (compiler + OLS) from
+# upstream GitHub releases. Neither is installed from a package: the repos lag
+# behind the monthly dev releases, so this reproduces the hand-rolled layout:
 #
-# This reproduces the hand-rolled layout (Odin is not packaged because the
-# repos lag behind the monthly dev releases):
+#   ~/.local/opt/odin/{odin,base,core,vendor,shared,examples,LICENSE}   (odin-lang/Odin)
+#   ~/.local/opt/ols/{ols,odinfmt,builtin}                             (DanielGavin/ols)
+#   ~/.local/bin/{odin,ols,odinfmt} -> the two opt dirs
 #
-#   ~/.local/opt/odin/{odin,base,core,vendor,shared,examples,LICENSE}
-#   ~/.local/bin/odin -> ~/.local/opt/odin/odin
+# Each install dir gets a .release-tag marker (tag / asset digest / commit) so
+# re-running is a no-op unless upstream actually published something new.
 #
 # Examples:
-#   odin-update                        # update to the newest release
-#   odin-update --dry-run              # show what would happen
-#   odin-update --force                # reinstall even if already current
-#   odin-update --tag dev-2026-11      # pin a specific release
-#   odin-update --prefix /tmp/odin     # install somewhere else (for testing)
+#   odin-update                      # compiler + language server
+#   odin-update --dry-run            # show the plan, download nothing
+#   odin-update --odin-only          # just the compiler
+#   odin-update --ols-only           # just ols + odinfmt
+#   odin-update --force              # reinstall even when current
+#   odin-update --odin-tag dev-2026-11
+#   odin-update --ols-tag dev-2026-11 # pin a release (default: newest, incl. nightly)
+#   odin-update --prefix /tmp/odin --ols-prefix /tmp/ols   # install elsewhere
 
-const REPO = "odin-lang/Odin"
-const TAG_MARKER = ".release-tag"
+const ODIN_REPO = "odin-lang/Odin"
+const OLS_REPO = "DanielGavin/ols"
+const MARKER = ".release-tag"
 
-# x86_64 -> amd64, aarch64 -> arm64 (the names used in the release assets)
+def die [msg: string] {
+    error make { msg: $msg }
+}
+
+# amd64 / arm64, the naming Odin uses in its release assets.
 def detect-arch [] {
     let m = (^uname -m | str trim)
     if $m in ["x86_64" "amd64"] { return "amd64" }
     if $m in ["aarch64" "arm64"] { return "arm64" }
-    error make { msg: $"unsupported architecture: ($m)" }
+    die $"unsupported architecture: ($m)"
 }
 
-# Newest non-prerelease tag, straight from `gh release list`.
-def latest-tag [] {
-    let res = (^gh release list -R $REPO --limit 30
-        --json tagName,publishedAt,isPrerelease | complete)
+def gh-out [cmd: list<string>] {
+    let res = (^gh ...$cmd | complete)
     if $res.exit_code != 0 {
-        error make { msg: $"gh release list failed: ($res.stderr | str trim)" }
+        die $"gh ($cmd | str join ' ') failed: ($res.stderr | str trim)"
     }
-    $res.stdout
+    $res.stdout | str trim
+}
+
+# Newest stable release tag. `latest-any-tag` also considers pre-releases, which
+# is what OLS's rolling `nightly` release is.
+def latest-tag [repo: string] {
+    gh-out ["release" "list" "-R" $repo "--limit" "30" "--json" "tagName,publishedAt,isPrerelease"]
     | from json
     | where {|r| not $r.isPrerelease }
     | sort-by publishedAt --reverse
@@ -41,139 +56,211 @@ def latest-tag [] {
     | first
 }
 
-# The linux tarball for this arch, e.g. odin-linux-amd64-dev-2026-11a.tar.gz
-def asset-name [tag: string, arch: string] {
-    let res = (^gh release view $tag -R $REPO --json assets | complete)
-    if $res.exit_code != 0 {
-        error make { msg: $"gh release view ($tag) failed: ($res.stderr | str trim)" }
-    }
-    let found = (
-        $res.stdout
-        | from json
-        | get assets.name
-        | where {|n| $n =~ $"^odin-linux-($arch)-" and ($n | str ends-with ".tar.gz") }
-    )
+def latest-any-tag [repo: string] {
+    gh-out ["release" "list" "-R" $repo "--limit" "20" "--json" "tagName,publishedAt"]
+    | from json
+    | sort-by publishedAt --reverse
+    | get tagName
+    | first
+}
+
+def release-assets [repo: string, tag: string] {
+    gh-out ["release" "view" $tag "-R" $repo "--json" "assets"]
+    | from json
+    | get assets
+}
+
+def pick-asset [repo: string, tag: string, pattern: string] {
+    let found = (release-assets $repo $tag | where {|a| $a.name =~ $pattern })
     if ($found | is-empty) {
-        error make { msg: $"no linux-($arch) tarball in release ($tag)" }
+        die $"no asset matching /($pattern)/ in ($repo)@($tag)"
     }
     $found | first
 }
 
-# Commit the tag points at; the compiler reports it after the ':' in `odin version`.
-def tag-commit [tag: string] {
-    let res = (^gh api $"repos/($REPO)/commits/($tag)" --jq .sha | complete)
-    if $res.exit_code != 0 {
-        error make { msg: $"gh api commits/($tag) failed: ($res.stderr | str trim)" }
-    }
-    $res.stdout | str trim | str substring 0..6
+def tag-commit [repo: string, tag: string] {
+    gh-out ["api" $"repos/($repo)/commits/($tag)" "--jq" ".sha"]
 }
 
-# Commit baked into an already-installed binary, or null if there is none.
-def installed-commit [bin: path] {
+# Commit an installed binary embeds in its version banner, or null.
+# odin: "dev-2026-10-nightly:84bc3fc"   -> after ':' is the commit
+# ols : "nightly-2026-11-22-459ffb7e"   -> last '-' field is the commit (nightlies only)
+def installed-cookie [bin: path, kind: string] {
     if not ($bin | path exists) { return null }
     let res = (^$bin version | complete)
     if $res.exit_code != 0 { return null }
-    $res.stdout | str trim | lines | first | split row ':' | last | str trim
+    let line = ($res.stdout | str trim | lines | first)
+    if $kind == "odin" {
+        return ($line | split row ':' | last | str trim)
+    }
+    let tail = ($line | split row '-' | last | str trim)
+    if ($tail =~ '^[0-9a-f]{7,}$') { $tail } else { null }
+}
+
+def read-marker [dir: path] {
+    let f = ($dir | path join $MARKER)
+    if not ($f | path exists) { return {} }
+    open $f | lines
+    | where {|l| $l =~ '=' }
+    | parse '{key}={value}'
+    | reduce --fold {} {|it, acc| $acc | upsert $it.key $it.value }
+}
+
+def write-marker [dir: path, tag: string, digest: string, commit: string] {
+    $"tag=($tag)\ndigest=($digest)\ncommit=($commit)\n" | save --force ($dir | path join $MARKER)
+}
+
+# gh release download, retried: GitHub occasionally 404s a valid tag.
+def fetch [repo: string, tag: string, asset: string, dir: string] {
+    mut last = { exit_code: 1, stdout: '', stderr: 'not attempted' }
+    for attempt in 1..3 {
+        $last = (^gh release download $tag -R $repo --pattern $asset --dir $dir --clobber | complete)
+        if $last.exit_code == 0 { return }
+        print $"  attempt ($attempt) failed: ($last.stderr | str trim)"
+        sleep 2sec
+    }
+    die $"download of ($asset) failed: ($last.stderr | str trim)"
+}
+
+# Put `payload` at `dest`, keeping the previous tree aside until it is verified.
+# Returns the backup path, or null when there was nothing to replace.
+def swap-in [payload: path, dest: path] {
+    let backup = $"($dest).old"
+    rm -rf $backup
+    let existed = ($dest | path exists)
+    if $existed { mv $dest $backup }
+    mv $payload $dest
+    if $existed { $backup } else { null }
+}
+
+def link-bin [target: path, link_dir: path, name: string] {
+    mkdir $link_dir
+    ^ln --symbolic --force $target ($link_dir | path join $name)
 }
 
 def main [
-    --force (-f)            # reinstall even when already on the newest tag
-    --tag (-t): string      # install this release tag instead of the newest
-    --prefix (-p): string   # install dir (default: ~/.local/opt/odin)
-    --bin-dir (-b): string  # where to put the symlink (default: ~/.local/bin, none for a custom --prefix)
-    --dry-run (-n)          # print the plan and stop
+    --odin-only (-o)                 # only the compiler
+    --ols-only (-l)                  # only the language server (ols + odinfmt)
+    --force (-f)                     # reinstall even when already current
+    --odin-tag (-t): string          # pin the compiler release tag
+    --ols-tag: string                # pin the ols release tag (default: newest, incl. nightly)
+    --prefix (-p): string            # compiler install dir (default: ~/.local/opt/odin)
+    --ols-prefix: string             # ols install dir (default: ~/.local/opt/ols)
+    --bin-dir (-b): string           # where to put the symlinks (default: ~/.local/bin)
+    --dry-run (-n)                   # print the plan and stop
 ] {
     let arch = (detect-arch)
-    let opt = (
-        $prefix | default ($nu.home-dir | path join ".local" "opt" "odin")
-        | path expand --no-symlink
-    )
-    let link_dir = (
-        $bin_dir | default (if $prefix == null { $nu.home-dir | path join ".local" "bin" })
-    )
-    let linker = (if $link_dir == null { null } else { $link_dir | path join "odin" })
+    let work = (^mktemp -d | str trim)
+    let bin_dir = ($bin_dir | default ($nu.home-dir | path join ".local" "bin") | path expand --no-symlink)
+
+    try {
+        if not $ols_only { do-odin $arch $work $bin_dir $odin_tag $prefix $force $dry_run }
+        if not $odin_only { do-ols $arch $work $bin_dir $ols_tag $ols_prefix $force $dry_run }
+    } catch {|e|
+        rm -rf $work
+        die $e.msg
+    }
+    rm -rf $work
+
+    if not $dry_run {
+        print $"\nRun `ols version` and `odin version` to confirm; nothing else to do."
+    }
+}
+
+def do-odin [
+    arch: string, work: path, bin_dir: path,
+    tag: any, prefix: any, force: bool, dry_run: bool,
+] {
+    let opt = ($prefix | default ($nu.home-dir | path join ".local" "opt" "odin") | path expand --no-symlink)
     let bin = ($opt | path join "odin")
+    let target = ($tag | default (latest-tag $ODIN_REPO))
+    let commit = (tag-commit $ODIN_REPO $target)
+    let current = (installed-cookie $bin "odin")
+    let prev = (read-marker $opt)
 
-    let target = ($tag | default (latest-tag))
-    let wanted = (tag-commit $target)
-    let current = (installed-commit $bin)
+    print "\n== Odin compiler =="
+    print $"  release   : ($target)  [commit ($commit | str substring 0..6)]"
+    print $"  installed : ($current | default 'none')  at ($opt)"
 
-    let shown = (if $current == null { 'none' } else { $current })
-    print $"repo      : ($REPO)"
-    print $"release   : ($target)  [commit ($wanted)]"
-    print $"installed : ($shown)  at ($opt)"
-    print $"platform  : linux-($arch)"
-
-    if $current == $wanted and not $force {
-        print "\nAlready up to date."
+    if $current == ($commit | str substring 0..6) and not $force {
+        print "  status    : already up to date"
         return
     }
 
-    let art = (asset-name $target $arch)
-    print $"asset     : ($art)"
-    if $dry_run {
-        print "\nDry run: nothing downloaded."
-        return
-    }
+    let asset = (pick-asset $ODIN_REPO $target $"^odin-linux-($arch)-.*\\.tar\\.gz$")
+    print $"  asset     : ($asset.name)"
+    if $dry_run { print "  status    : would install (dry run)"; return }
 
-    let tmp = (^mktemp -d | str trim)
-    print $"\nDownloading to ($tmp) ..."
-    # GitHub occasionally answers 404/502 for a valid tag; retry a couple of times.
-    mut dl = { exit_code: 1, stdout: '', stderr: 'not attempted' }
-    for attempt in 1..3 {
-        $dl = (^gh release download $target -R $REPO --pattern $art --dir $tmp --clobber
-            | complete)
-        if $dl.exit_code == 0 { break }
-        print $"  attempt ($attempt) failed: ($dl.stderr | str trim)"
-        sleep 2sec
-    }
-    if $dl.exit_code != 0 {
-        rm -rf $tmp
-        error make { msg: $"download failed: ($dl.stderr | str trim)" }
-    }
+    fetch $ODIN_REPO $target $asset.name $work
+    let tarball = ($work | path join $asset.name)
+    let unpack = (^tar -xzf $tarball -C $work | complete)
+    if $unpack.exit_code != 0 { die $"extract failed: ($unpack.stderr | str trim)" }
+    # Single top-level dir: odin-linux-<arch>-nightly+<date>/
+    let payload = (ls $work | where type == dir | get name | first)
 
-    let unpack = (^tar -xzf ($tmp | path join $art) -C $tmp | complete)
-    if $unpack.exit_code != 0 {
-        rm -rf $tmp
-        error make { msg: $"extract failed: ($unpack.stderr | str trim)" }
-    }
+    let backup = (swap-in $payload $opt)
+    write-marker $opt $target $asset.digest $commit
+    link-bin ($opt | path join "odin") $bin_dir "odin"
 
-    # The tarball holds a single directory (odin-linux-<arch>-nightly+<date>/).
-    let payload = (ls $tmp | where type == dir | get name | first)
-
-    let backup = $"($opt).old"
-    if ($opt | path exists) {
-        rm -rf $backup
-        mv $opt $backup
-    }
-    mv $payload $opt
-    $"($target) ($wanted)\n" | save --force ($opt | path join $TAG_MARKER)
-
-    if $linker != null {
-        mkdir ($linker | path dirname)
-        ^ln --symbolic --force ($opt | path join "odin") $linker
-    }
-
-    rm -rf $backup
-    rm -rf $tmp
-
-    print $"Installed ($target) -> ($opt)"
-    if $linker == null {
-        print "No symlink created; pass --bin-dir <dir> to link it onto PATH."
-    } else {
-        print $"Linked    ($linker) -> ($opt | path join 'odin')"
-    }
-    let now = (installed-commit $bin)
-    if $now != $wanted {
-        error make { msg: $"post-install check failed: binary reports ($now), expected ($wanted)" }
-    }
     let reported = (^$bin version | str trim | lines | first)
-    print $"Verified  ($reported)"
-
-    if $linker != null {
-        let on_path = ($env.PATH | any {|p| ($p | path expand --no-symlink) == ($linker | path dirname) })
-        if not $on_path {
-            print $"\nWarning: ($linker | path dirname) is not on PATH."
-        }
+    if (installed-cookie $bin "odin") != ($commit | str substring 0..6) {
+        if $backup != null { rm -rf $opt; mv $backup $opt }
+        die $"post-install check failed: ($reported) does not match ($target)"
     }
+    if $backup != null { rm -rf $backup }
+    rm -f $tarball
+    print $"  installed ($reported)"
+    print $"  linked    ($bin_dir | path join 'odin') -> ($opt | path join 'odin')"
+}
+
+def do-ols [
+    arch: string, work: path, bin_dir: path,
+    tag: any, prefix: any, force: bool, dry_run: bool,
+] {
+    let opt = ($prefix | default ($nu.home-dir | path join ".local" "opt" "ols") | path expand --no-symlink)
+    let triple = (if $arch == "amd64" { "x86_64" } else { "arm64" }) + "-unknown-linux-gnu"
+    let target = ($tag | default (latest-any-tag $OLS_REPO))
+    let commit = (tag-commit $OLS_REPO $target)
+    let prev = (read-marker $opt)
+    let current = (installed-cookie ($opt | path join "ols") "ols")
+
+    print "\n== Odin language server (ols) =="
+    print $"  release   : ($target)  [commit ($commit | str substring 0..6)]"
+    print $"  installed : ($current | default 'none')  at ($opt)"
+
+    let asset = (pick-asset $OLS_REPO $target $"^ols-($arch | str replace amd64 x86_64)-.*linux.*\\.zip$")
+    print $"  asset     : ($asset.name)"
+
+    if $prev.digest? == $asset.digest and not $force {
+        print "  status    : already up to date"
+        return
+    }
+    if $dry_run { print "  status    : would install (dry run)"; return }
+
+    fetch $OLS_REPO $target $asset.name $work
+    let zip = ($work | path join $asset.name)
+    let unpack = (^unzip -oq $zip -d ($work | path join "ols") | complete)
+    if $unpack.exit_code != 0 { die $"extract failed: ($unpack.stderr | str trim)" }
+
+    # The zip is flat: ols-<triple>, odinfmt-<triple>, builtin/. Rename the pair.
+    let raw = ($work | path join "ols")
+    let payload = ($work | path join "ols.payload")
+    mkdir $payload
+    mv ($raw | path join "builtin") ($payload | path join "builtin")
+    let ols_bin = (ls $raw | where {|f| ($f.name | path basename) starts-with "ols-" } | get name | first)
+    let fmt_bin = (ls $raw | where {|f| ($f.name | path basename) starts-with "odinfmt-" } | get name | first)
+    mv $ols_bin ($payload | path join "ols")
+    mv $fmt_bin ($payload | path join "odinfmt")
+    ^chmod +x ($payload | path join "ols") ($payload | path join "odinfmt")
+
+    let backup = (swap-in $payload $opt)
+    write-marker $opt $target $asset.digest $commit
+    link-bin ($opt | path join "ols") $bin_dir "ols"
+    link-bin ($opt | path join "odinfmt") $bin_dir "odinfmt"
+
+    let reported = (^($opt | path join "ols") version | str trim | lines | first)
+    if $backup != null { rm -rf $backup }
+    rm -f $zip
+    print $"  installed ($reported)"
+    print $"  linked    ($bin_dir | path join 'ols'), ($bin_dir | path join 'odinfmt')"
 }
